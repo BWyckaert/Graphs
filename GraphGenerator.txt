@@ -1,0 +1,51 @@
+	public static void GenerateGraphToTextFile(int nbVert, int edgeChance, string name)
+        {
+            List<string> lines = new List<string>();
+            lines.Add("Dummy");
+            Random rnd = new Random();
+            int edges = 0;
+
+            for (int i = 1; i <= nbVert; i++)
+            {
+                for (int j = i + 1; j <= nbVert; j++)
+                {
+                    int random = rnd.Next(1, 11);
+                    if (random <= edgeChance)
+                    {
+                        lines.Add("e " + i + " " + j);
+                        edges += 1;
+                    }
+                }
+            }
+            lines[0] = "p edges " + nbVert + " " + edges;
+
+            if (CheckDensity(nbVert, edgeChance, edges))
+            {
+                File.WriteAllLines(@"$pathname$" + name + ".txt", lines);
+            } else
+            {
+                GenerateGraphToTextFile(nbVert, edgeChance, name);
+            }
+            
+        }
+
+        public static void GenerateGraphs(int nbGraphs, int nbVert, int density)
+        {
+            for (int i = 1; i <= nbGraphs; i++)
+            {
+                string name = "V" + nbVert + "D" + density + "R" + i;
+                GenerateGraphToTextFile(nbVert, density, name);
+            }
+        }
+
+        public static bool CheckDensity(int nbVert, int edgeChance, int edgesCreated)
+        {
+            double expectedEdges = ((nbVert * (nbVert - 1)) / 2) * ((double) edgeChance / 10);
+            if (edgesCreated < Math.Round(expectedEdges * 0.95) || edgesCreated > Math.Round(expectedEdges * 1.05))
+            {
+                return false;
+            } else
+            {
+                return true;
+            }
+        }
